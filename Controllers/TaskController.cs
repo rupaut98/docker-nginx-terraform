@@ -11,16 +11,16 @@ namespace docker_nginx_terraform.Controllers
 
     public class TaskController : ControllerBase{
 
-        private static List<TaskModel> tasks = new List<TaskModel>();
+        protected static List<TaskModel> tasks = new List<TaskModel>();
 
-        [HttpGet]
+        [HttpGet("get")]
 
         public ActionResult<IEnumerable<TaskModel>> GetTasks(){
             return Ok(tasks);
         }
 
         // GET: api/task/{id}
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public ActionResult<TaskModel> GetTaskById(int id){
             TaskModel task = null;
 
@@ -38,8 +38,8 @@ namespace docker_nginx_terraform.Controllers
             return Ok(task);
         }
 
-        //POST: api/task
-        [HttpPost]
+        //POST: api/task/create
+        [HttpPost("create")]
         public ActionResult<TaskModel> CreateTask(TaskModel newTask){
             
             if (tasks.Count > 0){
@@ -53,7 +53,7 @@ namespace docker_nginx_terraform.Controllers
             return CreatedAtAction(nameof(GetTaskById), new {id = newTask.Id}, newTask);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public ActionResult<TaskModel> DeleteTaskById(int id){
             TaskModel task = null;
 
@@ -72,6 +72,41 @@ namespace docker_nginx_terraform.Controllers
 
                 return NoContent();
             }
+        }
+
+    }
+
+    public class ExtendedTaskController : TaskController
+    {
+        [HttpGet]
+        public ActionResult<List<TaskModel>> GetCompletedTasks(){
+            List<TaskModel> completedTasks = new List<TaskModel>();
+
+            foreach (var t in tasks){
+                if (t.IsCompleted == true){
+                    completedTasks.Add(t);
+                }
+            }
+
+            return Ok(completedTasks);
+        }
+
+        [HttpPost]
+        public ActionResult<TaskModel> ModifyDescriptionById(int id, string d){
+            TaskModel task = null;
+
+            foreach (var t in tasks){
+                if (t.Id == id){
+                    task = t;
+                    task.Description = d;
+                    break;
+                }
+            }
+            if (task == null){
+                return NotFound();
+            }
+
+            return Ok(task);
         }
     }
 }
