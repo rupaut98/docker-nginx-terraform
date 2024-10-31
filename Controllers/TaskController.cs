@@ -52,5 +52,26 @@ namespace docker_nginx_terraform.Controllers
             tasks.Add(newTask);
             return CreatedAtAction(nameof(GetTaskById), new {id = newTask.Id}, newTask);
         }
+
+        [HttpDelete("{id}")]
+        public ActionResult<TaskModel> DeleteTaskById(int id){
+            TaskModel task = null;
+
+            foreach (var t in tasks){
+                if (t.Id == id){
+                    task = t;
+                    break;
+                }
+            }
+
+            if (task == null){
+                return NotFound();
+            }
+            else{
+                tasks.Remove(task);
+
+                return NoContent();
+            }
+        }
     }
 }
