@@ -8,7 +8,7 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 }
 
 resource "aws_db_instance" "default" {
-    allocated_storage    = 1
+    allocated_storage    = 20
     db_name              = "task_db"
     engine               = "mysql"
     engine_version       = "8.0"
@@ -18,7 +18,7 @@ resource "aws_db_instance" "default" {
     parameter_group_name = "default.mysql8.0"
     skip_final_snapshot  = true
     db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
-    vpc_security_ids = [aws_security_group.rds_sg.id]
+    vpc_security_group_ids = [aws_security_group.rds_sg.id]
 
     tags = {
         Name = "task-db-database"
