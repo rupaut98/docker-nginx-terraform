@@ -49,3 +49,53 @@ resource "aws_route_table_association" "private_subnet_2_association" {
     subnet_id = aws_subnet.private_subnet_2.id
     route_table_id = aws_route_table.private_route_table.id
 }
+
+resource "aws_db_subnet_group" "rds_subnet_group" {
+    name = "rds_subnet_group"
+    subnet_ids = ["aws_subnet.private_subnet_1.id", "aws_subnet.private_subnet_2.id"]
+
+    tags = {
+        Name = "rds_subnet_group"
+    }
+}
+
+resource "aws_security_group" "rds_sg"{
+    vpc_id = aws_vpc.main_vpc.id
+
+    ingress{
+        from_port = 3306
+        to_port = 3306
+        protocol = "tcp"
+        cidr_blocks = ["10.0.0.0/16"]
+    }
+
+    egress{
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_block = ["0.0.0.0/0"]
+    }
+
+    tags {
+        Name = "rds_security_group"
+    }
+}
+
+resource "aws_db_instance" "default" {
+    allocated_storage    = 1
+    db_name              = "task_db"
+    engine               = "mysql"
+    engine_version       = "8.0"
+    instance_class       = "db.t3.micro"
+    username             = var.db_username
+    password             = var.db_password
+    parameter_group_name = "default.mysql8.0"
+    skip_final_snapshot  = true
+    db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
+    vpc_security_ids = [aws_security_group.rds_sg.id]
+
+    tags = {
+        Name = "task-db-database"
+    }
+}
+
