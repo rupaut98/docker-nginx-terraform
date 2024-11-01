@@ -12,7 +12,7 @@ namespace docker_nginx_terraform.Controllers
 
     public class TaskController : ControllerBase{
 
-        private readonly ApplicationDbContext _context;
+        protected readonly ApplicationDbContext _context;
 
         public TaskController(ApplicationDbContext context){
             _context = context;
@@ -65,6 +65,9 @@ namespace docker_nginx_terraform.Controllers
 
     public class ExtendedTaskController : TaskController
     {
+        public ExtendedTaskController(ApplicationDbContext context) : base(context)
+        {
+        }
         [HttpGet]
         public ActionResult<List<TaskModel>> GetCompletedTasks(){
             var completedTasks = _context.Tasks.Where(t => t.Completed).ToList();

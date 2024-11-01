@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using docker_nginx_terraform.Models;
+using TaskModel = docker_nginx_terraform.Models.Task;
 
 namespace docker_nginx_terraform.Contexts
 {
@@ -9,7 +10,7 @@ namespace docker_nginx_terraform.Contexts
         {
         }
 
-        public DbSet<Task> Tasks { get; set; }
+        public DbSet<TaskModel> Tasks { get; set; }
 
     }
 }
