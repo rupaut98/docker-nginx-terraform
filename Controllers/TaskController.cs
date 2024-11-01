@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using docker_nginx_terraform.Models;
 using System.Collections.Generic;
 using System.Linq;
+using docker_nginx_terraform.Contexts;
 using TaskModel = docker_nginx_terraform.Models.Task;
 
 namespace docker_nginx_terraform.Controllers
@@ -11,25 +12,23 @@ namespace docker_nginx_terraform.Controllers
 
     public class TaskController : ControllerBase{
 
-        protected static List<TaskModel> tasks = new List<TaskModel>();
+        private readonly ApplicationDbContext _context;
+
+        public TaskController(ApplicationDbContext context){
+            _context = context;
+        }
 
         [HttpGet("get")]
 
         public ActionResult<IEnumerable<TaskModel>> GetTasks(){
-            return Ok(tasks);
+            return Ok(_context.Tasks.ToList());
         }
 
         // GET: api/task/{id}
         [HttpGet("get/{id}")]
         public ActionResult<TaskModel> GetTaskById(int id){
-            TaskModel task = null;
 
-            foreach (var t in tasks){
-                if (t.Id == id){
-                    task = t;
-                    break;
-                }
-            }
+            var task = _context.Tasks.Find(id);
 
             if (task == null){
                 return NotFound();
@@ -41,34 +40,22 @@ namespace docker_nginx_terraform.Controllers
         //POST: api/task/create
         [HttpPost("create")]
         public ActionResult<TaskModel> CreateTask(TaskModel newTask){
-            
-            if (tasks.Count > 0){
-                int MaxId = tasks.Max(t => t.Id);
-                newTask.Id = MaxId + 1;
-            }
-            else{
-                newTask.Id = 1;
-            }
-            tasks.Add(newTask);
+            _context.Tasks.Add(newTask);
+            _context.SaveChanges();
+
             return CreatedAtAction(nameof(GetTaskById), new {id = newTask.Id}, newTask);
         }
 
         [HttpDelete("delete/{id}")]
         public ActionResult<TaskModel> DeleteTaskById(int id){
-            TaskModel task = null;
-
-            foreach (var t in tasks){
-                if (t.Id == id){
-                    task = t;
-                    break;
-                }
-            }
+            var task = _context.Tasks.Find(id);
 
             if (task == null){
                 return NotFound();
             }
             else{
-                tasks.Remove(task);
+                _context.Tasks.Remove(task);
+                _context.SaveChanges();
 
                 return NoContent();
             }
@@ -80,31 +67,21 @@ namespace docker_nginx_terraform.Controllers
     {
         [HttpGet]
         public ActionResult<List<TaskModel>> GetCompletedTasks(){
-            List<TaskModel> completedTasks = new List<TaskModel>();
-
-            foreach (var t in tasks){
-                if (t.IsCompleted == true){
-                    completedTasks.Add(t);
-                }
-            }
+            var completedTasks = _context.Tasks.Where(t => t.Completed).ToList();
 
             return Ok(completedTasks);
         }
 
         [HttpPost]
         public ActionResult<TaskModel> ModifyDescriptionById(int id, string d){
-            TaskModel task = null;
+            var task = _context.Tasks.Find(id);
 
-            foreach (var t in tasks){
-                if (t.Id == id){
-                    task = t;
-                    task.Description = d;
-                    break;
-                }
-            }
             if (task == null){
                 return NotFound();
             }
+
+            t.Description = d;
+            _context.SaveChanges();
 
             return Ok(task);
         }
