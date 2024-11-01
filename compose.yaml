@@ -2,13 +2,11 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: . 
-    restart: always
+    image: backend_image
     depends_on:
       - proxy
     secrets:
-      - RDS_CONNECTION_STRING
+      - rds_connection_string
     environment:
       - ASPNETCORE_URLS=http://+:8000
       - ConnectionStrings__DefaultConnection=file:/run/secrets/rds_connection_string
@@ -24,3 +22,7 @@ services:
 
 volumes:
   db-data:
+
+secrets:
+  rds_connection_string:
+    external: true
