@@ -10,13 +10,12 @@ RUN dotnet restore -a $TARGETARCH
 
 # Copy source code and publish app
 COPY --link . .
-RUN dotnet publish -c Release -r linux-$TARGETARCH --self-contained=false -o /app
-
+RUN dotnet publish -c Release -o /app
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 EXPOSE 80
 WORKDIR /app
 COPY --link --from=build /app .
-USER $APP_UID
-ENTRYPOINT ["dotnet", "aspnetapp.dll"]
+
+ENTRYPOINT ["dotnet", "docker-nginx-terraform.dll"]
