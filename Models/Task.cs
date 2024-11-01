@@ -6,13 +6,6 @@ namespace docker_nginx_terraform.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsCompleted { get; set; }
-
-        public PriorityLevel Priority {get; set;}
     }
 
-    public enum PriorityLevel{
-        Low,
-        Medium,
-        High
-    }
 }

@@ -70,7 +70,7 @@ namespace docker_nginx_terraform.Controllers
         }
         [HttpGet]
         public ActionResult<List<TaskModel>> GetCompletedTasks(){
-            var completedTasks = _context.Tasks.Where(t => t.Completed).ToList();
+            var completedTasks = _context.Tasks.Where(t => t.IsCompleted==true).ToList();
 
             return Ok(completedTasks);
         }
@@ -83,7 +83,7 @@ namespace docker_nginx_terraform.Controllers
                 return NotFound();
             }
 
-            t.Description = d;
+            task.Description = d;
             _context.SaveChanges();
 
             return Ok(task);
