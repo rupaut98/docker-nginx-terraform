@@ -11,8 +11,8 @@ resource "aws_ecs_task_definition" "task_definition" {
         {
             name = "first"
             image = "677276109734.dkr.ecr.us-west-2.amazonaws.com/app/task-app:latest"
-            cpu = "10"
-            memory = "512"
+            cpu = 10
+            memory = 256
             essential = true
             portMappings = [
             {
@@ -27,19 +27,22 @@ resource "aws_ecs_task_definition" "task_definition" {
 resource "aws_iam_role" "ecs_task_execution_role" {
     name = "ecs_task_execution_role"
 
-    assume_role_policy = jsondecode({
-        Version = "2012-10-17"
-        Statement = [
-            {
-                Action : "sts:AssumeRole"
-                Effect = "Allow"
-                Principal = {
-                    Service = "ecs-tasks.amazonaws.com"
-                }
-            }
-        ]
-    })
+    assume_role_policy = <<POLICY
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "ecs-tasks.amazonaws.com"
+          }
+        }
+      ]
+    }
+    POLICY
 }
+
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   role = aws_iam_role.ecs_task_execution_role.name
