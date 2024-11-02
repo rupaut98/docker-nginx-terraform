@@ -5,8 +5,7 @@ resource "aws_ecs_cluster" "main_cluster" {
 resource "aws_ecs_task_definition" "task_definition" {
     family = "service"
     network_mode = "bridge"
-
-
+    requires_compatibilities = ["EC2"]
     execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
     container_definitions = jsonencode([
         {
@@ -55,7 +54,7 @@ resource "aws_ecs_service" "ecs_service" {
 
     network_configuration {
       subnets = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
-      security_groups = [aws_security_group.rds_sg.id]
+      security_groups = [aws_security_group.rds_sg.id, aws_security_group.ec2_sg.id]
     }
 
     desired_count = 1
