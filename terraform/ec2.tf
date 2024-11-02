@@ -1,6 +1,6 @@
 resource "aws_instance" "taskapp" {
-    ami = "ami-0c55b159cbfafe1f0"
-    instance_type = "t2.micro"
+    ami = "ami-07c5ecd8498c59db5"
+    instance_type = "t3.micro"
     subnet_id = aws_subnet.private_subnet_1.id
     associate_public_ip_address = false
 

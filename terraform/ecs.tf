@@ -4,7 +4,7 @@ resource "aws_ecs_cluster" "main_cluster" {
 
 resource "aws_ecs_task_definition" "task_definition" {
     family = "service"
-    network_mode = "bridge"
+    network_mode = "awsvpc"
     requires_compatibilities = ["EC2"]
     execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
     container_definitions = jsonencode([
